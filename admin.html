@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moda – Gallery Admin</title>
+<style>
+/* Copy the same CSS variables and admin styles from the main site */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#080808;--off-black:#101010;--dark:#181818;--mid:#242424;
+  --border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.18);
+  --white:#ffffff;--off-white:#f5f3f0;--cream:#ede8e0;
+  --red:#c0392b;--red-bright:#e63946;--red-dim:rgba(192,57,43,0.15);
+  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',-apple-system,sans-serif;
+  --transition:0.3s ease;
+}
+body{background:var(--black);color:var(--white);font-family:var(--sans);font-size:16px;line-height:1.6;padding:2rem;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.admin-container{max-width:800px;width:100%;margin:0 auto;padding:2rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.admin-header h1{font-family:var(--serif);font-size:2rem;font-weight:300}
+.admin-header a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:14px;transition:var(--transition)}
+.admin-header a:hover{color:var(--white)}
+.admin-section{margin-bottom:2rem}
+.admin-section h3{font-family:var(--serif);font-size:1.4rem;font-weight:300;margin-bottom:1rem}
+.upload-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.upload-row select,.upload-row input[type="file"]{flex:1;min-width:180px;padding:0.6rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:4px;color:var(--white);font-size:13px}
+.upload-row select option{background:var(--dark)}
+.upload-row input[type="file"]::file-selector-button{padding:0.4rem 1rem;background:var(--mid);border:none;border-radius:3px;color:var(--white);cursor:pointer;font-weight:500;transition:var(--transition)}
+.upload-row input[type="file"]::file-selector-button:hover{background:var(--border-hover)}
+.btn{display:inline-block;padding:0.6rem 1.5rem;background:var(--red);color:var(--white);border:none;border-radius:4px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:var(--transition);text-decoration:none}
+.btn:hover{background:var(--red-bright)}
+.btn-secondary{background:var(--mid)}
+.btn-secondary:hover{background:var(--border-hover)}
+.btn-danger{background:#8b0000}
+.btn-danger:hover{background:#cc0000}
+.password-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.password-row input{flex:1;min-width:200px;padding:0.6rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:4px;color:var(--white);font-size:13px}
+.gallery-grid-admin{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.5rem;margin-top:1rem}
+.gallery-item-admin{position:relative;aspect-ratio:1;overflow:hidden;border-radius:4px;background:rgba(255,255,255,0.03)}
+.gallery-item-admin img{width:100%;height:100%;object-fit:cover}
+.gallery-item-admin .delete-btn{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(192,57,43,0.9);color:white;font-size:16px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center}
+.gallery-item-admin .delete-btn:hover{background:var(--red-bright);transform:scale(1.1)}
+.gallery-item-admin .slot-label{position:absolute;bottom:5px;left:5px;right:5px;background:rgba(0,0,0,0.7);padding:3px 8px;font-size:9px;letter-spacing:0.05em;text-align:center;border-radius:3px;color:rgba(255,255,255,0.7)}
+.empty-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.2);font-size:12px}
+.hidden{display:none}
+.info-text{font-size:12px;color:rgba(255,255,255,0.4);margin-top:0.5rem}
+.back-link{display:inline-block;margin-top:2rem;color:rgba(255,255,255,0.4);text-decoration:none;font-size:14px;transition:var(--transition)}
+.back-link:hover{color:var(--white)}
+</style>
+</head>
+<body>
+
+<div class="admin-container">
+  
+  <!-- Header -->
+  <div class="admin-header">
+    <h1>🎨 Gallery Admin</h1>
+    <a href="index.html">← Back to Site</a>
+  </div>
+
+  <!-- Login Section -->
+  <div id="adminLoginSection" class="admin-section">
+    <h3>Admin Login</h3>
+    <div class="password-row">
+      <input type="password" id="adminPassword" placeholder="Enter admin password...">
+      <button class="btn" onclick="handleLogin()">Login</button>
+    </div>
+    <div class="info-text">Default password: <strong>admin123</strong></div>
+  </div>
+
+  <!-- Admin Controls -->
+  <div id="adminControls" class="hidden">
+    
+    <!-- Upload Section -->
+    <div class="admin-section">
+      <h3>📤 Upload Image</h3>
+      <div class="upload-row">
+        <select id="uploadSlot">
+          <option value="gm1">Slot 1 (Large)</option>
+          <option value="gm2">Slot 2</option>
+          <option value="gm3">Slot 3</option>
+          <option value="gm4">Slot 4</option>
+          <option value="gm5">Slot 5</option>
+          <option value="gm6">Slot 6</option>
+        </select>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button class="btn" onclick="handleUpload()">Upload</button>
+      </div>
+      <div class="info-text">Recommended: Square images (1:1 ratio), max 2MB</div>
+    </div>
+
+    <!-- Gallery Management -->
+    <div class="admin-section">
+      <h3>🖼️ Current Gallery</h3>
+      <div class="gallery-grid-admin" id="galleryAdminGrid"></div>
+    </div>
+
+    <!-- Logout -->
+    <button class="btn btn-secondary" onclick="logoutAdmin()">Logout</button>
+  </div>
+
+  <a href="index.html" class="back-link">← Return to Moda Website</a>
+</div>
+
+<!-- Scripts -->
+<script src="gallery-data.js"></script>
+<script src="gallery-manager.js"></script>
+
+</body>
+</html>
